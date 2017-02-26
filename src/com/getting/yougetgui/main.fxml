@@ -21,8 +21,8 @@
 
             <top>
                 <MenuBar BorderPane.alignment="CENTER">
-                    <Menu mnemonicParsing="false" text="文件">
-                        <MenuItem onAction="#onAddUrlClick" text="新建任务">
+                    <Menu mnemonicParsing="false" text="任务">
+                        <MenuItem onAction="#onAddUrlClick" text="新建">
                             <accelerator>
                                 <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP"
                                                     shift="UP"

@@ -124,6 +124,7 @@ public class VideoDownloadTask extends ExecuteTask implements Externalizable {
 
     @Override
     public void writeExternal(@NotNull ObjectOutput out) throws IOException {
+        out.writeObject(videoProfile.get());
         out.writeObject(url.get());
         out.writeObject(title.get());
         out.writeObject(downloadDirectory.get());
@@ -131,6 +132,7 @@ public class VideoDownloadTask extends ExecuteTask implements Externalizable {
 
     @Override
     public void readExternal(@NotNull ObjectInput in) throws IOException, ClassNotFoundException {
+        videoProfile.set((String) in.readObject());
         url.set((String) in.readObject());
         title.set((String) in.readObject());
         downloadDirectory.set((File) in.readObject());
