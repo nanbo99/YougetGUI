@@ -9,6 +9,7 @@ you-get 是一个支持几乎所有主流视频网站视频下载的python脚本
 1. 安装java(8u40+)版本
 
 2. 下载最新的YogetGUI release
+https://github.com/bajingxiaozi/YougetGUI/releases
 
 3. 双击运行YougetGUI.jar（或者使用java -jar YougetGUI.jar路径）
 
