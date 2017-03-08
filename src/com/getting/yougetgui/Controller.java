@@ -204,7 +204,7 @@ public class Controller implements Initializable {
                 if (data instanceof VideoDownloadTask[]) {
                     return (VideoDownloadTask[]) data;
                 }
-            } catch (@NotNull IOException | ClassNotFoundException e) {
+            } catch (@NotNull Exception e) {
                 LOGGER.error("ReadDownloadHistoryTask", e);
             }
 
@@ -229,7 +229,7 @@ public class Controller implements Initializable {
         public void run() {
             try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DOWNLOAD_HISTORY_FILE))) {
                 outputStream.writeObject(downloadList.getItems().toArray(new VideoDownloadTask[0]));
-            } catch (IOException e) {
+            } catch (Exception e) {
                 LOGGER.error("SaveDownloadHistoryTask", e);
             }
         }
