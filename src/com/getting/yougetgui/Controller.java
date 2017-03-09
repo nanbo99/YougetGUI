@@ -38,8 +38,8 @@ public class Controller implements Initializable {
     private static final File DOWNLOAD_HISTORY_FILE = new File(System.getProperty("java.io.tmpdir"), "youget.history");
     private final PathRecord pathRecord = new PathRecord(getClass(), "download directory");
     private final VideoDownload videoDownload = new VideoDownload();
-    private final Looper downloadLooper = new Looper();
-    private final Looper downloadHistoryLooper = new Looper();
+    private final Looper downloadLooper = new Looper("download");
+    private final Looper downloadHistoryLooper = new Looper("download history");
     @FXML
     private NotificationPane notification;
     @FXML
