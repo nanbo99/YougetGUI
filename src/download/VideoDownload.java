@@ -67,8 +67,8 @@ public class VideoDownload extends Executor {
 
     @Override
     public void cancel() {
-        super.cancel();
-        forceCancel();
+//        super.cancel();
+        new Thread(this::forceCancel).start();
     }
 
 }
