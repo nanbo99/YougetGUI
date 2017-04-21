@@ -33,7 +33,7 @@ public class ClipboardMonitor {
                     }
 
                     Platform.runLater(() -> {
-                        if (clipboard.hasString()) {
+                        if (clipboard.hasString() && clipboard.getString() != null) {
                             List<String> newClipboardString = Arrays.asList(clipboard.getString().split("\n"));
                             for (String string : newClipboardString) {
                                 if (!clipboardStrings.contains(string)) {
@@ -55,12 +55,12 @@ public class ClipboardMonitor {
         monitorThread.start();
     }
 
-    public synchronized void pause(){
+    public synchronized void pause() {
         pauseMonitor = true;
         notifyAll();
     }
 
-    public synchronized  void resume(){
+    public synchronized void resume() {
         pauseMonitor = false;
         notifyAll();
     }

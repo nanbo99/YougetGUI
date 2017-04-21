@@ -84,7 +84,7 @@ public class Controller implements Initializable {
         clipboardMonitor.getClipboardStrings().addListener((ListChangeListener<String>) c -> {
             while (c.next()) {
                 for (String string : c.getAddedSubList()) {
-                    if(string.contains(".com")) {
+                    if (string.contains(".com")) {
                         addDownloadTask(new String[]{string});
                     }
                 }
@@ -194,7 +194,7 @@ public class Controller implements Initializable {
     private void onAddUrlFromClipboardClick() {
         Clipboard clipboard = Clipboard.getSystemClipboard();
         LOGGER.info("onAddUrlFromClipboardClick");
-        if (clipboard.hasString()) {
+        if (clipboard.hasString() && clipboard.getString() != null) {
             LOGGER.info(clipboard.getString());
             addDownloadTask(clipboard.getString().split("\n"));
         }
