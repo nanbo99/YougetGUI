@@ -85,7 +85,7 @@ public class Controller implements Initializable {
             while (c.next()) {
                 for (String string : c.getAddedSubList()) {
                     if (string.contains(".com")) {
-                        addDownloadTask(new String[]{string});
+                        addDownloadTask(string);
                     }
                 }
             }
@@ -106,6 +106,17 @@ public class Controller implements Initializable {
             params.add(new VideoDownloadTask(url, pathRecord.getPath()));
         }
 
+        addDownloadTask(params);
+    }
+
+    @UiThread
+    private void addDownloadTask(@NotNull String url) {
+        if (url.isEmpty()) {
+            return;
+        }
+
+        ArrayList<VideoDownloadTask> params = new ArrayList<>();
+        params.add(new VideoDownloadTask(url, pathRecord.getPath()));
         addDownloadTask(params);
     }
 
