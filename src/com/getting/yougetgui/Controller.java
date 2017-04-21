@@ -4,12 +4,15 @@ import com.getting.util.AsyncTask;
 import com.getting.util.Looper;
 import com.getting.util.PathRecord;
 import com.getting.util.Task;
+import com.getting.util.annotation.UiThread;
 import com.getting.util.binding.NullableObjectStringFormatter;
 import download.VideoDownload;
 import download.VideoDownloadTask;
 import javafx.application.Platform;
+import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
 import javafx.fxml.Initializable;
+import javafx.scene.control.CheckMenuItem;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
@@ -20,8 +23,10 @@ import javafx.stage.DirectoryChooser;
 import org.controlsfx.control.NotificationPane;
 import org.controlsfx.control.action.Action;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.ClipboardMonitor;
 import view.VideoUrlInputDialog;
 
 import java.io.*;
@@ -40,6 +45,7 @@ public class Controller implements Initializable {
     private final VideoDownload videoDownload = new VideoDownload();
     private final Looper downloadLooper = new Looper("download");
     private final Looper downloadHistoryLooper = new Looper("download history");
+
     @FXML
     private NotificationPane notification;
     @FXML
@@ -59,6 +65,8 @@ public class Controller implements Initializable {
     @FXML
     private TableColumn<VideoDownloadTask, Double> downloadProgressColumn;
 
+    private ClipboardMonitor clipboardMonitor = new ClipboardMonitor();
+
     @Override
     public void initialize(URL location, ResourceBundle resources) {
         videoProfileColumn.setCellValueFactory(new PropertyValueFactory<>("videoProfile"));
@@ -72,9 +80,21 @@ public class Controller implements Initializable {
         downloadSpeedView.textProperty().bind(videoDownload.downloadSpeedProperty());
 
         downloadHistoryLooper.postTask(new ReadDownloadHistoryTask());
+
+        clipboardMonitor.getClipboardStrings().addListener((ListChangeListener<String>) c -> {
+            while (c.next()) {
+                for (String string : c.getAddedSubList()) {
+                    if(string.contains(".com")) {
+                        addDownloadTask(new String[]{string});
+                    }
+                }
+            }
+        });
+
         Platform.runLater(this::addExitListener);
     }
 
+    @UiThread
     private void addDownloadTask(@NotNull String[] urls) {
         ArrayList<VideoDownloadTask> params = new ArrayList<>();
         for (String url : urls) {
@@ -89,6 +109,7 @@ public class Controller implements Initializable {
         addDownloadTask(params);
     }
 
+    @UiThread
     private void addDownloadTask(@NotNull List<VideoDownloadTask> params) {
         for (VideoDownloadTask param : params) {
             downloadList.getItems().add(param);
@@ -100,14 +121,19 @@ public class Controller implements Initializable {
         downloadList.getSelectionModel().selectLast();
     }
 
+    private void exit() {
+        downloadLooper.removeAllTasks();
+        downloadLooper.quit();
+        downloadHistoryLooper.quit();
+        clipboardMonitor.quit();
+    }
+
     private void addExitListener() {
         downloadList.getScene().getWindow().setOnCloseRequest(event -> {
             downloadHistoryLooper.postTask(new SaveDownloadHistoryTask());
 
             if (downloadLooper.isAllDone()) {
-                downloadLooper.removeAllTasks();
-                downloadLooper.quit();
-                downloadHistoryLooper.quit();
+                exit();
                 return;
             }
 
@@ -115,9 +141,7 @@ public class Controller implements Initializable {
 
             notification.getActions().clear();
             notification.getActions().add(new Action("退出", actionEvent -> {
-                downloadLooper.removeAllTasks();
-                downloadLooper.quit();
-                downloadHistoryLooper.quit();
+                exit();
                 Platform.exit();
             }));
             notification.show("还有视频在下载，确认退出？");
