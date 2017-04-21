@@ -1,4 +1,5 @@
 # YougetGUI
+
 https://github.com/soimort/you-get 的Windows图形化界面实现
 
 you-get 是一个支持几乎所有主流视频网站视频下载的python脚本实现
@@ -6,12 +7,10 @@ you-get 是一个支持几乎所有主流视频网站视频下载的python脚本
 
 
 # 使用方法
+
 1. 安装java(8u40+)版本
 
-2. 下载最新的YogetGUI release
-https://github.com/bajingxiaozi/YougetGUI/releases
-
-3. 双击运行YougetGUI.jar（或者使用java -jar YougetGUI.jar路径）
+2. 双击运行源代码根目录YougetGUI.jar文件 （或者双击运行源代码根目录"运行.bat"文件）
 
 
 
@@ -31,6 +30,9 @@ https://github.com/bajingxiaozi/YougetGUI/releases
 3. 自动保存下载记录
 
 
+# 注意
+
+如果通过"运行.bat"来运行程序，那么请通过关闭程序窗口来关闭程序，不要通过关闭输出log的控制台窗口来关闭程序。
 
 
 # 实现原理
