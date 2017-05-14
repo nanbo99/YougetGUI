@@ -1,0 +1,12 @@
+<component name="ArtifactManager">
+  <artifact type="jar" build-on-make="true" name="YougetGUI:jar">
+    <output-path>$PROJECT_DIR$/out/artifacts/YougetGUI_jar</output-path>
+    <root id="archive" name="YougetGUI.jar">
+      <element id="module-output" name="YougetGUI" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/ExecutorTools.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/slf4j-api-1.7.21.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/controlsfx-8.40.12.jar" path-in-jar="/" />
+      <element id="extracted-dir" path="$PROJECT_DIR$/libs/slf4j-simple-1.7.21.jar" path-in-jar="/" />
+    </root>
+  </artifact>
+</component>

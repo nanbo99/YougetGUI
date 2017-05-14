@@ -1,44 +1,19 @@
 package download;
 
+import com.getting.util.annotation.NotUiThread;
 import com.getting.util.executor.Executor;
 import javafx.application.Platform;
 import javafx.beans.property.SimpleStringProperty;
 import javafx.beans.property.StringProperty;
+import javafx.beans.value.ChangeListener;
 import org.jetbrains.annotations.NotNull;
 
 public class VideoDownload extends Executor {
 
     private final StringProperty downloadSpeed = new SimpleStringProperty();
-    @NotNull
-    private VideoDownloadTask videoDownloadTask = new VideoDownloadTask();
 
     public VideoDownload() {
         super(VideoDownload.class, "you-get-0.4.715-win32-full.exe");
-        executorOutputMessage.addListener((observable, oldValue, newValue) -> {
-            if (newValue == null) {
-                return;
-            }
-
-            final String title = YougetUtil.getTitle(newValue);
-            if (title != null) {
-                Platform.runLater(() -> videoDownloadTask.setTitle(title));
-            }
-
-            final String videoProfile = YougetUtil.getVideoProfile(newValue);
-            if (videoProfile != null) {
-                Platform.runLater(() -> videoDownloadTask.setVideoProfile(videoProfile));
-            }
-
-            final YougetUtil.DownloadProgress downloadProgress = YougetUtil.getDownloadProgress(newValue);
-            if (downloadProgress != null) {
-                Platform.runLater(() -> {
-                    videoDownloadTask.setStatus(downloadProgress.description.trim());
-                    videoDownloadTask.setProgress(downloadProgress.downloaded / downloadProgress.total);
-                });
-            }
-
-            Platform.runLater(() -> downloadSpeed.set(YougetUtil.getSpeed(newValue)));
-        });
     }
 
     public String getDownloadSpeed() {
@@ -50,14 +25,44 @@ public class VideoDownload extends Executor {
         return downloadSpeed;
     }
 
+    @NotUiThread
     public void download(@NotNull VideoDownloadTask task) {
         Platform.runLater(() -> {
-            this.videoDownloadTask = task;
             task.setProgress(Double.NEGATIVE_INFINITY);
             task.setStatus("");
         });
 
+        ChangeListener<String> listener = (observable, oldValue, newValue) -> {
+            if (newValue == null) {
+                return;
+            }
+
+            final String title = YougetUtil.getTitle(newValue);
+            if (title != null) {
+                Platform.runLater(() -> task.setTitle(title));
+            }
+
+            final String videoProfile = YougetUtil.getVideoProfile(newValue);
+            if (videoProfile != null) {
+                Platform.runLater(() -> task.setVideoProfile(videoProfile));
+            }
+
+            final YougetUtil.DownloadProgress downloadProgress = YougetUtil.getDownloadProgress(newValue);
+            if (downloadProgress != null) {
+                Platform.runLater(() -> {
+                    task.setStatus(downloadProgress.description.trim());
+                    task.setProgress(downloadProgress.downloaded / downloadProgress.total);
+                });
+            }
+
+            Platform.runLater(() -> downloadSpeed.set(YougetUtil.getSpeed(newValue)));
+        };
+
+        executorOutputMessage.addListener(listener);
+
         execute(task, false);
+
+        executorOutputMessage.removeListener(listener);
 
         Platform.runLater(() -> {
             downloadSpeed.set("");
