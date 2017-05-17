@@ -6,6 +6,7 @@ import javafx.beans.property.*;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import util.YougetPreference;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -22,6 +23,7 @@ public class VideoDownloadTask extends ExecuteTask implements Externalizable {
     private final DoubleProperty progress = new SimpleDoubleProperty();
     private final ObjectProperty<File> downloadDirectory = new SimpleObjectProperty<>();
     private final StringProperty title = new SimpleStringProperty();
+    private YougetPreference yougetPreference = YougetPreference.getInstance();
 
     public VideoDownloadTask(String url, File downloadDirectory) {
         this.url.set(url);
@@ -29,7 +31,9 @@ public class VideoDownloadTask extends ExecuteTask implements Externalizable {
         this.downloadDirectory.set(downloadDirectory);
     }
 
+    // don't remove, needed by serialization
     public VideoDownloadTask() {
+
     }
 
     @NotNull
@@ -37,9 +41,24 @@ public class VideoDownloadTask extends ExecuteTask implements Externalizable {
     public List<String> buildParameters() {
         List<String> command = new ArrayList<>();
         command.add("-d");
+
+        // add proxy
+        if (yougetPreference.enableProxyProperty().get()) {
+            command.add("-x");
+            command.add(yougetPreference.getProxyHost() + ":" + yougetPreference.getProxyPort());
+        }
+
         command.add("-o");
         command.add(downloadDirectory.get().getAbsolutePath());
         command.add(url.get());
+
+        StringBuilder builder = new StringBuilder();
+        for (String string : command) {
+            builder.append(string);
+            builder.append(" ");
+        }
+        LOGGER.info("buildParameters: " + builder.toString());
+
         return command;
     }
 

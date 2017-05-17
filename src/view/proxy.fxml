@@ -1,0 +1,32 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.HBox?>
+<AnchorPane xmlns:fx="http://javafx.com/fxml/1" xmlns="http://javafx.com/javafx/8"
+            fx:controller="view.ProxyController">
+    <children>
+        <AnchorPane layoutX="30" layoutY="20">
+            <children>
+                <CheckBox mnemonicParsing="false" text="使用代理服务器" fx:id="enableProxyView"/>
+                <HBox layoutY="30.0">
+                    <children>
+                        <Label alignment="CENTER" contentDisplay="CENTER" prefHeight="25" text="地址："/>
+                        <TextField prefHeight="25" fx:id="proxyHostView"/>
+                    </children>
+                </HBox>
+                <HBox layoutY="60.0">
+                    <children>
+                        <Label prefHeight="25" text="端口："/>
+                        <TextField prefHeight="25" fx:id="proxyPortView"/>
+                    </children>
+                </HBox>
+            </children>
+        </AnchorPane>
+
+    </children>
+    <opaqueInsets>
+        <Insets/>
+    </opaqueInsets>
+</AnchorPane>

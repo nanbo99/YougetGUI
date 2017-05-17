@@ -10,7 +10,7 @@ public class YougetUtil {
 
     private static final Pattern VIDEO_PROFILE_REGEX = Pattern.compile(".+video-profile:(?<videoprofile>.+)", Pattern.CASE_INSENSITIVE);
     private static final Pattern PROGRESS_REGEX = Pattern.compile("(?<status>(?<downloaded>.+)/(?<total>.+)MB)", Pattern.CASE_INSENSITIVE);
-    private static final Pattern TITLE_REGEX = Pattern.compile(".*(title|playlist):(?<title>.+)", Pattern.CASE_INSENSITIVE);
+    private static final Pattern TITLE_REGEX = Pattern.compile(".*(title|playlist): (?<title>.+)", Pattern.CASE_INSENSITIVE);
     private static final Pattern SPEED_REGEX = Pattern.compile(".+ (?<downloadSpeed>\\d+ (kB|MB)/s)$", Pattern.CASE_INSENSITIVE);
 
     @Nullable

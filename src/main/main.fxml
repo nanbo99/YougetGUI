@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.input.KeyCodeCombination?>
+<?import javafx.scene.layout.*?>
+<?import org.controlsfx.control.NotificationPane?>
+<NotificationPane xmlns:fx="http://javafx.com/fxml/1" prefHeight="500" prefWidth="800"
+                  xmlns="http://javafx.com/javafx/8"
+                  fx:id="notification"
+                  fx:controller="main.Controller" showFromTop="false">
+    <content>
+        <BorderPane>
+            <bottom>
+                <ToolBar BorderPane.alignment="CENTER">
+                    <Button mnemonicParsing="false" onAction="#onSetDownloadDirectoryClick" text="设置下载目录"/>
+                    <Label fx:id="downloadDirectoryView"/>
+                    <Pane HBox.hgrow="ALWAYS"/>
+                    <Label fx:id="downloadSpeedView" textFill="olivedrab"/>
+                </ToolBar>
+            </bottom>
+
+            <top>
+                <MenuBar BorderPane.alignment="CENTER">
+                    <Menu mnemonicParsing="false" text="任务">
+                        <MenuItem onAction="#onAddUrlClick" text="新建">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="N" control="DOWN" meta="UP"
+                                                    shift="UP"
+                                                    shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem onAction="#onAddUrlFromClipboardClick" text="从剪切板新建">
+                            <accelerator>
+                                <KeyCodeCombination alt="UP" code="V" control="DOWN" meta="UP"
+                                                    shift="UP"
+                                                    shortcut="UP"/>
+                            </accelerator>
+                        </MenuItem>
+                        <MenuItem mnemonicParsing="false" onAction="#onClear" text="清空">
+                        </MenuItem>
+                    </Menu>
+                    <Menu mnemonicParsing="false" text="设置">
+                        <CheckMenuItem text="开启监控剪切板" fx:id="enableMonitorClipboardView">
+                        </CheckMenuItem>
+                    </Menu>
+                    <Menu mnemonicParsing="false" text="高级">
+                        <MenuItem mnemonicParsing="false" onAction="#onSetupProxy" text="设置代理服务器">
+                        </MenuItem>
+                    </Menu>
+                </MenuBar>
+            </top>
+
+            <center>
+                <TableView fx:id="downloadList" BorderPane.alignment="CENTER">
+                    <columns>
+                        <TableColumn fx:id="videoProfileColumn" maxWidth="50" minWidth="50" text="清晰度"
+                                     sortable="false"/>
+                        <TableColumn fx:id="videoTitleColumn" text="视频名称" sortable="false"/>
+                        <TableColumn fx:id="downloadStatusColumn" maxWidth="120" minWidth="120" text="状态"
+                                     sortable="false"/>
+                        <TableColumn fx:id="downloadProgressColumn" maxWidth="80" minWidth="80" text="进度"
+                                     sortable="false"/>
+                        <TableColumn fx:id="downloadDirectoryColumn" maxWidth="80" minWidth="80" text="下载位置"
+                                     sortable="false"/>
+                    </columns>
+
+                    <columnResizePolicy>
+                        <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                    </columnResizePolicy>
+
+                    <contextMenu>
+                        <ContextMenu>
+                            <items>
+                                <MenuItem mnemonicParsing="false" text="打开所在目录"
+                                          onAction="#onOpenDownloadDirectoryClick"/>
+                                <MenuItem mnemonicParsing="false" text="新建任务" onAction="#onAddUrlClick"/>
+                                <MenuItem mnemonicParsing="false" text="删除任务" onAction="#onRemoveClick"/>
+                            </items>
+                        </ContextMenu>
+                    </contextMenu>
+                </TableView>
+            </center>
+        </BorderPane>
+    </content>
+</NotificationPane>
