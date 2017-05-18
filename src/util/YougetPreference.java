@@ -24,10 +24,19 @@ public class YougetPreference {
 
     private YougetPreference() {
         downloadDirectory.set(preference.get(DOWNLOAD_DIRECTORY_KEY, DEFAULT_DOWNLOAD_DIRECTORY));
+        downloadDirectory.addListener((observable, oldValue, newValue) -> preference.save(DOWNLOAD_DIRECTORY_KEY, newValue));
+
         enableProxy.set(Boolean.parseBoolean(preference.get(ENABLE_PROXY_KEY, "false")));
+        enableProxy.addListener((observable, oldValue, newValue) -> preference.save(ENABLE_PROXY_KEY, "" + newValue));
+
         proxyHost.set(preference.get(PROXY_HOST_KEY, "127.0.0.1"));
+        proxyHost.addListener((observable, oldValue, newValue) -> preference.save(PROXY_HOST_KEY, newValue));
+
         proxyPort.set(preference.get(PROXY_PORT_KEY, "8087"));
+        proxyPort.addListener((observable, oldValue, newValue) -> preference.save(PROXY_PORT_KEY, newValue));
+
         enableMonitorClipboard.set(Boolean.parseBoolean(preference.get(ENABLE_MONITOR_CLIPBOARD_KEY, "false")));
+        enableMonitorClipboard.addListener((observable, oldValue, newValue) -> preference.save(ENABLE_MONITOR_CLIPBOARD_KEY, "" + newValue));
     }
 
     public static YougetPreference getInstance() {
@@ -39,7 +48,6 @@ public class YougetPreference {
     }
 
     public void setDownloadDirectory(String downloadDirectory) {
-        preference.save(DOWNLOAD_DIRECTORY_KEY, downloadDirectory);
         this.downloadDirectory.set(downloadDirectory);
     }
 
@@ -52,7 +60,6 @@ public class YougetPreference {
     }
 
     public void setEnableProxy(boolean enableProxy) {
-        preference.save(ENABLE_PROXY_KEY, "" + enableProxy);
         this.enableProxy.set(enableProxy);
     }
 
@@ -65,7 +72,6 @@ public class YougetPreference {
     }
 
     public void setProxyHost(String proxyHost) {
-        preference.save(PROXY_HOST_KEY, proxyHost);
         this.proxyHost.set(proxyHost);
     }
 
@@ -78,7 +84,6 @@ public class YougetPreference {
     }
 
     public void setProxyPort(String proxyPort) {
-        preference.save(PROXY_PORT_KEY, proxyPort);
         this.proxyPort.set(proxyPort);
     }
 
@@ -91,7 +96,6 @@ public class YougetPreference {
     }
 
     public void setEnableMonitorClipboard(boolean enableMonitorClipboard) {
-        preference.save(ENABLE_MONITOR_CLIPBOARD_KEY, "" + enableMonitorClipboard);
         this.enableMonitorClipboard.set(enableMonitorClipboard);
     }
 

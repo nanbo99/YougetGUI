@@ -79,14 +79,17 @@ public class Controller implements Initializable {
         downloadSpeedView.textProperty().bind(videoDownload.downloadSpeedProperty());
 
         enableMonitorClipboardView.setSelected(yougetPreference.isEnableMonitorClipboard());
+        yougetPreference.enableMonitorClipboardProperty().bind(enableMonitorClipboardView.selectedProperty());
 
-        downloadHistoryLooper.postTask(new ReadDownloadHistoryTask());
+        downloadLooper.postTask(new ReadDownloadHistoryTask());
 
+        initClipboardMonitor();
+
+        Platform.runLater(this::addExitListener);
+    }
+
+    private void initClipboardMonitor() {
         clipboardMonitor.getClipboardStrings().addListener((ListChangeListener<String>) c -> {
-            if (!enableMonitorClipboardView.isSelected()) {
-                return;
-            }
-
             while (c.next()) {
                 for (String string : c.getAddedSubList()) {
                     if (string.contains(".com")) {
@@ -95,8 +98,16 @@ public class Controller implements Initializable {
                 }
             }
         });
-
-        Platform.runLater(this::addExitListener);
+        enableMonitorClipboardView.selectedProperty().addListener((observable, oldValue, newValue) -> {
+            if (newValue) {
+                clipboardMonitor.start();
+            } else {
+                clipboardMonitor.pause();
+            }
+        });
+        if (enableMonitorClipboardView.isSelected()) {
+            clipboardMonitor.start();
+        }
     }
 
     private void initializeDownloadList() {
@@ -106,6 +117,11 @@ public class Controller implements Initializable {
         downloadProgressColumn.setCellFactory(ProgressBarTableCell.forTableColumn());
         downloadDirectoryColumn.setCellValueFactory(new PropertyValueFactory<>("downloadDirectory"));
         videoTitleColumn.setCellValueFactory(new PropertyValueFactory<>("title"));
+
+        downloadList.getItems().addListener((ListChangeListener<VideoDownloadTask>) c -> {
+            downloadHistoryLooper.removeTask(SAVE_DOWNLOAD_HISTORY_ID);
+            downloadHistoryLooper.postTask(new SaveDownloadHistoryTask());
+        });
     }
 
     @UiThread
@@ -117,7 +133,6 @@ public class Controller implements Initializable {
                 continue;
             }
 
-            LOGGER.error("yougetPreference.isEnableProxy(): " + yougetPreference.isEnableProxy());
             params.add(new VideoDownloadTask(url, new File(yougetPreference.getDownloadDirectory())));
         }
 
@@ -129,7 +144,6 @@ public class Controller implements Initializable {
         for (VideoDownloadTask param : params) {
             downloadList.getItems().add(param);
             downloadLooper.postTask(new DownloadTask(param));
-            downloadLooper.postTask(new SaveDownloadHistoryTask());
         }
 
         downloadList.requestFocus();
@@ -138,15 +152,14 @@ public class Controller implements Initializable {
 
     private void exit() {
         downloadLooper.removeAllTasks();
-        downloadLooper.quit();
         downloadHistoryLooper.quit();
+        downloadLooper.quit();
         clipboardMonitor.quit();
-
-        yougetPreference.setEnableMonitorClipboard(enableMonitorClipboardView.isSelected());
     }
 
     private void addExitListener() {
         downloadList.getScene().getWindow().setOnCloseRequest(event -> {
+            downloadHistoryLooper.removeTask(SAVE_DOWNLOAD_HISTORY_ID);
             downloadHistoryLooper.postTask(new SaveDownloadHistoryTask());
 
             if (downloadLooper.isAllDone()) {
@@ -207,7 +220,6 @@ public class Controller implements Initializable {
     private void onClear() {
         downloadList.getItems().clear();
         downloadLooper.removeAllTasks();
-        downloadHistoryLooper.postTask(new SaveDownloadHistoryTask());
     }
 
     @FXML
@@ -270,10 +282,12 @@ public class Controller implements Initializable {
 
     }
 
+    private static final Object SAVE_DOWNLOAD_HISTORY_ID = new Object();
+
     private class SaveDownloadHistoryTask extends Task {
 
         public SaveDownloadHistoryTask() {
-            super(null, 0);
+            super(SAVE_DOWNLOAD_HISTORY_ID, 0);
         }
 
         @Override

@@ -17,18 +17,18 @@ public class ClipboardMonitor {
     private ObservableList<String> clipboardStrings = FXCollections.observableArrayList();
 
     private boolean continueMonitor = true;
-    private boolean pauseMonitor = false;
+    private boolean pauseMonitor = true;
 
     public ClipboardMonitor() {
         Thread monitorThread = new Thread(() -> {
-            LOGGER.error("start monitor");
+            LOGGER.info("start monitor");
             try {
                 while (continueMonitor) {
                     synchronized (this) {
-                        if (pauseMonitor) {
-                            LOGGER.error("pause monitor");
+                        while (pauseMonitor) {
+                            LOGGER.info("pause monitor");
                             wait();
-                            LOGGER.error("resume monitor");
+                            LOGGER.info("resume monitor");
                         }
                     }
 
@@ -50,8 +50,9 @@ public class ClipboardMonitor {
                 LOGGER.error("", e);
             }
 
-            LOGGER.error("stop monitor");
+            LOGGER.info("stop monitor");
         });
+        monitorThread.setDaemon(true);
         monitorThread.start();
     }
 
@@ -60,7 +61,7 @@ public class ClipboardMonitor {
         notifyAll();
     }
 
-    public synchronized void resume() {
+    public synchronized void start() {
         pauseMonitor = false;
         notifyAll();
     }
