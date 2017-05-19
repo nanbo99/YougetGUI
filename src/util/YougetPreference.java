@@ -14,8 +14,10 @@ public class YougetPreference {
     private static final String PROXY_HOST_KEY = "proxy-host";
     private static final String PROXY_PORT_KEY = "proxy-port";
     private static final String ENABLE_MONITOR_CLIPBOARD_KEY = "enable-monitor-clipboard";
+
     private static YougetPreference ourInstance = new YougetPreference();
     private final Preference preference = new Preference("youget-gui");
+
     private StringProperty downloadDirectory = new SimpleStringProperty();
     private BooleanProperty enableProxy = new SimpleBooleanProperty();
     private StringProperty proxyHost = new SimpleStringProperty();

@@ -8,12 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.YougetPreference;
 
-import java.io.*;
+import javax.xml.bind.annotation.XmlElement;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 
-public class VideoDownloadTask extends ExecuteTask implements Externalizable {
+public class VideoDownloadTask extends ExecuteTask {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(VideoDownloadTask.class);
 
@@ -31,9 +32,8 @@ public class VideoDownloadTask extends ExecuteTask implements Externalizable {
         this.downloadDirectory.set(downloadDirectory);
     }
 
-    // don't remove, needed by serialization
+    // don't remove, add for JAXB
     public VideoDownloadTask() {
-
     }
 
     @NotNull
@@ -67,6 +67,7 @@ public class VideoDownloadTask extends ExecuteTask implements Externalizable {
         return downloadDirectory.get();
     }
 
+    @XmlElement
     public String getVideoProfile() {
         return videoProfile.get();
     }
@@ -95,10 +96,16 @@ public class VideoDownloadTask extends ExecuteTask implements Externalizable {
         return videoProfile;
     }
 
+    @XmlElement
     public File getDownloadDirectory() {
         return downloadDirectory.get();
     }
 
+    public void setDownloadDirectory(File downloadDirectory) {
+        this.downloadDirectory.set(downloadDirectory);
+    }
+
+    @XmlElement
     public String getTitle() {
         return title.get();
     }
@@ -118,8 +125,13 @@ public class VideoDownloadTask extends ExecuteTask implements Externalizable {
         return downloadDirectory;
     }
 
+    @XmlElement
     public String getUrl() {
         return url.get();
+    }
+
+    public void setUrl(String url) {
+        this.url.set(url);
     }
 
     @NotNull
@@ -139,22 +151,6 @@ public class VideoDownloadTask extends ExecuteTask implements Externalizable {
     @NotNull
     public StringProperty statusProperty() {
         return status;
-    }
-
-    @Override
-    public void writeExternal(@NotNull ObjectOutput out) throws IOException {
-        out.writeObject(videoProfile.get());
-        out.writeObject(url.get());
-        out.writeObject(title.get());
-        out.writeObject(downloadDirectory.get());
-    }
-
-    @Override
-    public void readExternal(@NotNull ObjectInput in) throws IOException, ClassNotFoundException {
-        videoProfile.set((String) in.readObject());
-        url.set((String) in.readObject());
-        title.set((String) in.readObject());
-        downloadDirectory.set((File) in.readObject());
     }
 
 }

@@ -6,6 +6,7 @@ import com.getting.util.Task;
 import com.getting.util.annotation.UiThread;
 import download.VideoDownload;
 import download.VideoDownloadTask;
+import download.VideoDownloadTaskList;
 import javafx.application.Platform;
 import javafx.collections.ListChangeListener;
 import javafx.fxml.FXML;
@@ -24,14 +25,15 @@ import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import util.ClipboardMonitor;
+import util.DownloadHistoryUtil;
 import util.YougetPreference;
 import view.ProxySetupDialog;
 import view.VideoUrlInputDialog;
 
-import java.io.*;
+import java.io.File;
+import java.io.IOException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.ResourceBundle;
 
@@ -39,7 +41,7 @@ public class Controller implements Initializable {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(Controller.class);
 
-    private static final File DOWNLOAD_HISTORY_FILE = new File(System.getProperty("java.io.tmpdir"), "youget.history");
+    private static final File DOWNLOAD_HISTORY_FILE = new File(System.getProperty("java.io.tmpdir"), "youget-gui-history.xml");
 
     private final VideoDownload videoDownload = new VideoDownload();
     private final Looper downloadLooper = new Looper("download");
@@ -250,34 +252,35 @@ public class Controller implements Initializable {
         proxySetupDialog.showAndWait();
     }
 
-    private class ReadDownloadHistoryTask extends AsyncTask<VideoDownloadTask[]> {
+    private class ReadDownloadHistoryTask extends AsyncTask<List<VideoDownloadTask>> {
 
         public ReadDownloadHistoryTask() {
             super(null, 0);
         }
 
         @Override
-        public VideoDownloadTask[] runTask() {
+        public List<VideoDownloadTask> runTask() {
             if (!DOWNLOAD_HISTORY_FILE.exists()) {
-                return new VideoDownloadTask[0];
+                return new ArrayList<>();
             }
 
-            try (ObjectInputStream inputStream = new ObjectInputStream(new FileInputStream(DOWNLOAD_HISTORY_FILE))) {
-                Object data = inputStream.readObject();
-                if (data instanceof VideoDownloadTask[]) {
-                    return (VideoDownloadTask[]) data;
+            try {
+                VideoDownloadTaskList videoDownloadTaskList = (VideoDownloadTaskList) DownloadHistoryUtil.xmlToBean(DOWNLOAD_HISTORY_FILE, VideoDownloadTaskList.class);
+                if (videoDownloadTaskList.getVideoDownloadTasks() == null) {
+                    return new ArrayList<>();
+                } else {
+                    return videoDownloadTaskList.getVideoDownloadTasks();
                 }
-            } catch (@NotNull Exception e) {
+            } catch (Exception e) {
                 LOGGER.error("ReadDownloadHistoryTask", e);
             }
 
-
-            return new VideoDownloadTask[0];
+            return new ArrayList<>();
         }
 
         @Override
-        public void postTaskOnUi(VideoDownloadTask[] result) {
-            addDownloadTask(Arrays.asList(result));
+        public void postTaskOnUi(List<VideoDownloadTask> result) {
+            addDownloadTask(result);
         }
 
     }
@@ -292,8 +295,8 @@ public class Controller implements Initializable {
 
         @Override
         public void run() {
-            try (ObjectOutputStream outputStream = new ObjectOutputStream(new FileOutputStream(DOWNLOAD_HISTORY_FILE))) {
-                outputStream.writeObject(downloadList.getItems().toArray(new VideoDownloadTask[0]));
+            try {
+                DownloadHistoryUtil.beanToXml(DOWNLOAD_HISTORY_FILE, new VideoDownloadTaskList(new ArrayList<>(downloadList.getItems())), VideoDownloadTaskList.class);
             } catch (Exception e) {
                 LOGGER.error("SaveDownloadHistoryTask", e);
             }
