@@ -1,5 +1,9 @@
 # YougetGUI
 
+**<u>注：you-get没有更新最新版exe，现在无法使用</u>**
+
+
+
 https://github.com/soimort/you-get 的Windows图形化界面实现
 
 > you-get 是一个支持几乎所有主流视频网站视频下载的python脚本实现
