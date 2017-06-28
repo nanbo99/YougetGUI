@@ -27,7 +27,7 @@ https://github.com/soimort/you-get 的Windows图形化界面实现
 - 自动保存下载记录
 - 自动保存代理服务器等设置
 
-
+https://zhuanlan.zhihu.com/p/21571327
 # 注意
 
 如果通过`运行.bat`来运行程序，那么请通过关闭程序窗口来关闭程序，不要通过关闭输出log的控制台窗口来关闭程序。
